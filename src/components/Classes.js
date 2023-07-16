@@ -3,11 +3,11 @@ import { Container, Row, Col } from 'react-bootstrap';
 // import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 
-function Classes() {
+function Classes({neededClasses,setNeededClasses}) {
     let classes = {
         Warrior: ["Prot", "DPS"],
         Warlock: ["DPS"],
-        Shaman: ["Elemental", "Enhancement", "Resto"],
+        Shaman: ["Ele", "Enhance", "Resto"],
         Rogue: ["DPS"],
         Priest: ["DPS", "Heal"],
         Paladin: ["Holy", "Ret", "Prot"],
@@ -17,24 +17,46 @@ function Classes() {
         Dk: ["Tank", "DPS"]
     }
 
+
+    const getClass = (e) =>{
+        const classSpec = e.target.value.split('/') //takes value from checkbox and splits it into Class and Spec ['Paladin', 'Holy']
+       //checks if class is in selected classes
+      
+        if(neededClasses[classSpec[0]].includes(classSpec[1])){
+            //removes if class is already in selected           
+            setNeededClasses(prevState => ({
+                ...prevState,
+                [classSpec[0]] :  prevState[classSpec[0]].filter((items) =>items !== classSpec[1])
+            }))
+                //console.log(neededClasses)
+        }else{
+            //adds if class is not selected.
+            setNeededClasses(prevState => ({
+                ...prevState,
+                [classSpec[0]] : [...prevState[classSpec[0]], classSpec[1]]
+            }))
+        //console.log(neededClasses)
+        }
+    }
+
     return (
         <Container>
             <Row>
-                <Col>
+                
                     {Object.keys(classes).map((specs) => {
-                        return ([<h4>{specs}</h4>, classes[specs].map(spec => {
+                        return ([<Col xs={3} key={specs} className='mb-1'><h6>{specs}</h6> { classes[specs].map(spec => {
                             return (
-                                <>
-                                    <InputGroup className="mb-3">
-                                        <InputGroup.Checkbox aria-label="Checkbox for following text input" value={spec} /> {spec}
+                                <div key={spec}>
+                                    <InputGroup size='sm' className="mb-1">
+                                        <InputGroup.Checkbox onClick={(e)=>{getClass(e)}} size='sm' aria-label="Checkbox for following text input" value={specs+ '/' + spec} /> {spec}
                                     </InputGroup>
-                                </>
+                                </div>
                             )
-                        })]
+                        })}</Col>]
                         )
                     })}
 
-                </Col>
+                
             </Row>
         </Container>
     );
